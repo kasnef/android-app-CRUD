@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     ProductService productService;
 
     private EditText inputName, inputPrice, inputImagePath;
+    private EditText updateName, updatePrice, updateImagePath;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -90,6 +91,54 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create a new Dialog instance
+                final Dialog dialog = new Dialog(MainActivity.this);
+                // Set the content view of the dialog to the layout defined in dialog_add_product.xml
+                dialog.setContentView(R.layout.dialog_update_product);
+                // Find the Add Product button in the dialog layout
+                Button buttonUpdateProduct = dialog.findViewById(R.id.button_update_product);
+                // Find the Exit button in the dialog layout
+                Button buttonExitUpdate = dialog.findViewById(R.id.button_exit_update);
+                // Set an OnClickListener for the Add Product button
+                buttonUpdateProduct.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updateName = dialog.findViewById(R.id.update_name);
+                        updatePrice = dialog.findViewById(R.id.update_price);
+                        updateImagePath = dialog.findViewById(R.id.update_image_path);
+
+                        String updateProductName = updateName.getText().toString();
+                        double updateProductPrice = Double.parseDouble(updatePrice.getText().toString());
+                        String updateroductImagePath = updateImagePath.getText().toString();
+
+                        Product product = new Product(updateProductName, updateProductPrice, updateroductImagePath);
+                        updateProduct(product, listView);
+                        dialog.dismiss();
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Product added successfully", Toast.LENGTH_SHORT).show();
+                                loadProducts(listView, productService);
+                            }
+                        });
+                    }
+                });
+                // Set an OnClickListener for the Exit button
+                buttonExitUpdate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                // Show the dialog
+                dialog.show();
+            }
+        });
+
+
+
         loadProducts(listView, productService);
     }
 
@@ -118,6 +167,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void addProduct(Product product, ListView listView){
         Call<Product> call = productService.addProducts(product);
+        call.enqueue(new Callback<Product>() {
+            @Override
+            public void onResponse(Call<Product> call, Response<Product> response) {
+                if(response.isSuccessful()){
+                    loadProducts(listView, productService);
+                }
+            }
+            @Override
+            public void onFailure(Call<Product> call, Throwable t) {
+                System.out.println("error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void updateProduct(Product product, ListView listView){
+        Call<Product> call = productService.updateProduct(product);
         call.enqueue(new Callback<Product>() {
             @Override
             public void onResponse(Call<Product> call, Response<Product> response) {

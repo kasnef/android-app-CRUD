@@ -15,6 +15,18 @@
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="8dp">
 
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="120dp"
+            android:layout_weight="0.5"
+            android:fontFamily="sans-serif-black"
+            android:text="Add Product"
+            android:textSize="24sp"
+            tools:layout_editor_absoluteX="175dp"
+            tools:layout_editor_absoluteY="22dp" />
+
         <EditText
             android:id="@+id/input_name"
             android:layout_width="match_parent"
