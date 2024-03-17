@@ -69,9 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
                         Product product = new Product(productName, productPrice, productImagePath);
                         addProduct(product, listView);
-                        Toast.makeText(MainActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
-                        loadProducts(listView, productService);
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Product added successfully", Toast.LENGTH_SHORT).show();
+                                loadProducts(listView, productService);
+                            }
+                        });
                     }
                 });
                 // Set an OnClickListener for the Exit button
@@ -121,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
                     loadProducts(listView, productService);
                 }
             }
-
             @Override
             public void onFailure(Call<Product> call, Throwable t) {
                 System.out.println("error: " + t.getMessage());
