@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">hello-android</string>
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="load">Load</string>
+</resources>
