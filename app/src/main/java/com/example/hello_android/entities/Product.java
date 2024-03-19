@@ -3,9 +3,9 @@ package com.example.hello_android.entities;
 import androidx.annotation.NonNull;
 
 public class Product {
+    private int id;
     private String name;
     private double price;
-
     private String image;
 
     public Product(String name, double price, String image){
@@ -13,6 +13,22 @@ public class Product {
         this.price = price;
         this.image = image;
     }
+
+    public Product(int id, String name, double price, String image){
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.image = image;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName(){
         return name;
     }
@@ -39,7 +55,8 @@ public class Product {
     @NonNull
     @Override
     public String toString() {
-        return  "name: " + name + '\n' +
+        return  "id: " + id + '\n' +
+                "name: " + name + '\n' +
                 "price: " + price + '\n' +
                 "image: " + image + '\n';
     }

@@ -26,6 +26,12 @@
                 tools:layout_editor_absoluteY="22dp" />
 
             <EditText
+                android:id="@+id/update_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="ID" />
+
+            <EditText
                 android:id="@+id/update_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

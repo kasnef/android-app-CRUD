@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     ProductService productService;
 
     private EditText inputName, inputPrice, inputImagePath;
-    private EditText updateName, updatePrice, updateImagePath;
+    private EditText updateId, updateName, updatePrice, updateImagePath;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -91,35 +92,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 // Create a new Dialog instance
                 final Dialog dialog = new Dialog(MainActivity.this);
-                // Set the content view of the dialog to the layout defined in dialog_add_product.xml
+                // Set the content view of the dialog to the layout defined in dialog_update_product.xml
                 dialog.setContentView(R.layout.dialog_update_product);
-                // Find the Add Product button in the dialog layout
+                // Find the Update Product button in the dialog layout
                 Button buttonUpdateProduct = dialog.findViewById(R.id.button_update_product);
                 // Find the Exit button in the dialog layout
                 Button buttonExitUpdate = dialog.findViewById(R.id.button_exit_update);
-                // Set an OnClickListener for the Add Product button
+                // Set an OnClickListener for the Update Product button
                 buttonUpdateProduct.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        updateId = dialog.findViewById(R.id.update_id);
                         updateName = dialog.findViewById(R.id.update_name);
                         updatePrice = dialog.findViewById(R.id.update_price);
                         updateImagePath = dialog.findViewById(R.id.update_image_path);
 
+                        int updateProductId = Integer.parseInt(updateId.getText().toString());
                         String updateProductName = updateName.getText().toString();
                         double updateProductPrice = Double.parseDouble(updatePrice.getText().toString());
                         String updateroductImagePath = updateImagePath.getText().toString();
 
-                        Product product = new Product(updateProductName, updateProductPrice, updateroductImagePath);
+                        Product product = new Product(updateProductId, updateProductName, updateProductPrice, updateroductImagePath);
                         updateProduct(product, listView);
                         dialog.dismiss();
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(MainActivity.this, "Product added successfully", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "Product update successfully", Toast.LENGTH_SHORT).show();
                                 loadProducts(listView, productService);
                             }
                         });
@@ -134,10 +137,57 @@ public class MainActivity extends AppCompatActivity {
                 });
                 // Show the dialog
                 dialog.show();
+                return true;
             }
         });
 
-
+//        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Create a new Dialog instance
+//                final Dialog dialog = new Dialog(MainActivity.this);
+//                // Set the content view of the dialog to the layout defined in dialog_add_product.xml
+//                dialog.setContentView(R.layout.dialog_update_product);
+//                // Find the Add Product button in the dialog layout
+//                Button buttonUpdateProduct = dialog.findViewById(R.id.button_update_product);
+//                // Find the Exit button in the dialog layout
+//                Button buttonExitUpdate = dialog.findViewById(R.id.button_exit_update);
+//                // Set an OnClickListener for the Add Product button
+//                buttonUpdateProduct.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        updateId = dialog.findViewById(R.id.update_id);
+//                        updateName = dialog.findViewById(R.id.update_name);
+//                        updatePrice = dialog.findViewById(R.id.update_price);
+//                        updateImagePath = dialog.findViewById(R.id.update_image_path);
+//
+//                        int updateProductId = Integer.parseInt(updateId.getText().toString());
+//                        String updateProductName = updateName.getText().toString();
+//                        double updateProductPrice = Double.parseDouble(updatePrice.getText().toString());
+//                        String updateroductImagePath = updateImagePath.getText().toString();
+//
+//                        Product product = new Product(updateProductId, updateProductName, updateProductPrice, updateroductImagePath);
+//                        updateProduct(product, listView);
+//                        dialog.dismiss();
+//                        runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                Toast.makeText(MainActivity.this, "Product update successfully", Toast.LENGTH_SHORT).show();
+//                                loadProducts(listView, productService);
+//                            }
+//                        });
+//                    }
+//                });
+//                // Set an OnClickListener for the Exit button
+//                buttonExitUpdate.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                // Show the dialog
+//                dialog.show();
+//            }
+//        });
 
         loadProducts(listView, productService);
     }
