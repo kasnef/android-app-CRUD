@@ -27,7 +27,7 @@ import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity {
 
     ProductService productService;
-
+    private ArrayAdapter<Product> adapter;
     private EditText inputName, inputPrice, inputImagePath;
     private EditText updateId, updateName, updatePrice, updateImagePath;
 
@@ -44,7 +44,45 @@ public class MainActivity extends AppCompatActivity {
         Button buttonDelete = findViewById(R.id.button_delete);
         Button buttonUpdate = findViewById(R.id.button_edit);
         ListView listView = findViewById(R.id.productListView);
-
+        //delete product listview
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create a new Dialog instance
+                final Dialog dialog = new Dialog(MainActivity.this);
+                // Set the content view of the dialog to the layout defined in dialog_delete_product.xml
+                dialog.setContentView(R.layout.dialog_delete_product);
+                // Find the Delete Product button in the dialog layout
+                Button buttonDeleteProduct = dialog.findViewById(R.id.button_delete_product);
+                // Find the Exit button in the dialog layout
+                Button buttonExitDelete = dialog.findViewById(R.id.button_exit_delete);
+                // Set an OnClickListener for the Delete Product button
+                buttonDeleteProduct.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EditText inputName = dialog.findViewById(R.id.input_name);
+                        String productName = inputName.getText().toString();
+                        deleteProduct(productName, listView);
+                        dialog.dismiss();
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Product deleted successfully", Toast.LENGTH_SHORT).show();
+                                loadProducts(listView, productService);
+                            }
+                        });
+                    }
+                });
+                // Set an OnClickListener for the Exit button
+                buttonExitDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                // Show the dialog
+                dialog.show();
+            }
+        });
         // Set an OnClickListener for the Add button
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,7 +229,30 @@ public class MainActivity extends AppCompatActivity {
 
         loadProducts(listView, productService);
     }
+    private void deleteProduct(String name, ListView listView) {
+        Call<Product> call = productService.deleteProduct(name);
+        call.enqueue(new Callback<Product>() {
+            @Override
+            public void onResponse(Call<Product> call, Response<Product> response) {
+                if (response.isSuccessful()) {
+                    // Tìm và xóa sản phẩm từ adapter sau khi xác nhận xóa thành công từ server
+                    for(int i = 0; i < adapter.getCount(); i++) {
+                        if(adapter.getItem(i).getName().equals(name)) {
+                            adapter.remove(adapter.getItem(i));
+                            break; // Dừng vòng lặp sau khi tìm thấy và xóa sản phẩm
+                        }
+                    }
+                    adapter.notifyDataSetChanged(); // Cập nhật ListView
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Product> call, Throwable t) {
+                // Xử lý lỗi
+                System.out.println("error: " + t.getMessage());
+            }
+        });
+    }
     private void loadProducts(ListView listView, ProductService productService) {
 
         Call<List<Product>> call = productService.getAllProducts();
@@ -201,15 +262,16 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful()) {
                     List<Product> productList = response.body();
-                    ArrayAdapter<Product> adapter =
-                            new ArrayAdapter<Product>(MainActivity.this,
-                                    android.R.layout.simple_list_item_1, productList);
+                    // Gán dữ liệu và adapter vào biến toàn cục
+                    adapter = new ArrayAdapter<Product>(MainActivity.this,
+                            android.R.layout.simple_list_item_1, productList);
                     listView.setAdapter(adapter);
                 }
             }
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
+                // Xử lý lỗi
                 System.out.println("error: " + t.getMessage());
             }
         });
